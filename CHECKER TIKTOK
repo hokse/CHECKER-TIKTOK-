@@ -1,0 +1,140 @@
+print("CHECKER TIKTOK by @_zpoc")
+print("-----------------------------------")
+
+
+import requests
+import sys
+from os import path, getcwd
+
+import os
+import time
+import random
+import sys as n
+import time as mm
+import webbrowser
+from time import sleep
+import datetime as dt
+current_path = path.abspath(getcwd())
+
+
+id = input('ضع أيدي التيليقرام :')
+token = input('ضع توكن البوت في التيليفرام :')
+
+sa = 'https://pastebin.com/raw/MYmjfQj2'
+t = requests.get(sa).text
+
+
+if path.isfile(f'{current_path}//user.txt'):
+    pass
+else:
+    print('لا يوجد ملف بإسم user')
+    sys.exit()
+
+timeSleep = input('time sleep(1): ')
+if timeSleep == '':
+    print('سيكون 1')
+    sleep(0.4)
+    timeSleep = 1
+usersCounter = 0
+availableNum = 0
+takenNum = 0
+timeOut = 7
+availableUsers = list()
+fileNum = 1
+while path.isfile(f'{current_path}//المتاحات {fileNum}.txt'):
+    fileNum = fileNum + 1
+proxyFileNum = 1
+
+
+def getLines():
+    theFile = f"{current_path}//user.txt"
+    with open(theFile, 'r') as f:
+        usersList = list()
+        for user in f.readlines():
+            usersList.append(user.strip('\n'))
+        return usersList
+
+
+usersList = getLines()
+usersLen = len(usersList)
+
+sessionId = input('الرجاء وضع السيزن ايدي :')
+print(t)
+if sessionId == '':
+    print('خطأ في السيزن الأيدي')
+    sys.exit()
+
+
+def saveAvailables(user):
+    if path.isfile(f'{current_path}//المتاحات  {fileNum}.txt'):
+        with open(f'المتاحات {fileNum}.txt', 'r+') as f:
+            if user not in f.read().splitlines():
+                f.write(f'{user}\n')
+            else:
+                pass
+            f.close()
+    else:
+        with open(f'المتاحات {fileNum}.txt', 'a+') as f:
+            f.write(f'{user}\n')
+            f.close()
+
+
+
+for i in range(usersCounter, len(usersList)):
+    username = usersList[i]
+    sleep(float(timeSleep))
+    if str(username).isdecimal():
+        print(
+            f'لا يمكن وضع اليوزرات ارقام: {username} ')
+        pass
+    else:
+        for attempt in range(3):
+            try:
+                url = "https://www.tiktok.com/api/uniqueid/check/?region=SA&aid=1233&unique_id=" + \
+                    username+"&app_language=en"
+                payload = ""
+                headers = {
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+                    "Connection": "close",
+                    "Host": "www.tiktok.com",
+                    "Accept-Encoding": "gzip, deflate",
+                    "Cache-Control": "max-age=0"
+                }
+                cookies = {'sessionid': sessionId}
+                response = requests.request(
+                    "GET", url, data=payload, headers=headers, cookies=cookies, timeout=timeOut)
+
+                post = str(response.json()["status_msg"])
+                if post == "" or "":
+                    print(f'{username} متاح ✅')
+                    tlg =(f'https://api.telegram.org/bot{token}/sendMessage?chat_id={id}&text=\n CHECKER TIKTOK V0.1\n━━━━━━━━━━━━\n user : {username} \n━━━━━━━━━━━━\n  {t} ')
+                    req = requests.post(tlg)
+                    saveAvailables(user=username)
+                    availableNum = availableNum + 1
+                elif post == "Login expired":
+                    print('خطأ في السيزن أيدي')
+                    sys.exit()
+                else:
+                   
+                    print(f'{username} غير متاح ❌')
+                    takenNum = takenNum + 1
+                    
+            except Exception as e:
+                print(f'{username} حصل خطأ حاول مره اخرى ...')
+            else:
+                break
+        else:
+            print('الرجاء الاتصال بالانترنت!')
+            try:
+                usersCounter = usersCounter - 1
+            except:
+                pass
+            break
+
+        print(f'')
+        if i+1 == usersLen:
+            print(f'تم الانتهاء من الفحص, {availableNum} المتاحات, {takenNum} الغير متاح')
+
+    usersCounter = usersCounter + 1
+print('تم')
